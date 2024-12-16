@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"> -->
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="./static/images/favicon.png">
+  <!-- Typography CSS -->
+  <!-- <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700" rel="stylesheet"> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+
+
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/6.6.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.6.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.6.0/firebase-database.js"></script>
+
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyAkGRtjIhDYjybhdFUHmNM2FnCFA9z9-Gg",
+      authDomain: "expense-tracker-7e30c.firebaseapp.com",
+      databaseURL: "https://expense-tracker-7e30c.firebaseio.com",
+      projectId: "expense-tracker-7e30c",
+      storageBucket: "",
+      messagingSenderId: "886344330580",
+      appId: "1:886344330580:web:9c7cef3a3b72ef01d8ecc1"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+  <script src="./static/scripts/firebase.js"></script>
+  <script src="./static/scripts/chart.js"></script>
+  <!-- FIREBASE ends -->
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-sm fixed-top" style="background-color:#6bc8f9; height:70px;">
+    <!-- Brand/logo -->
+    <ul class="navbar-nav mr-auto">
+     <li><a class="navbar-brand" href="/"><img src="./static/images/logo.png" alt="Logo" style="height:50px;"></a></li>
+    </ul>
+
+    <!-- Links -->
+    <ul class="navbar-nav mr-right">
+      <li class="nav-item dropdown">
+        <a class="nav-link" href="/" style="color:white">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/transaction"  style="color:white">Transaction Page</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" onclick="logout_function()" style="color:white">Logout</a>
+      </li>
+    </ul>
+  </nav>
+  <br>
+
+<br><br><br>
+
+<h3 style="text-align:center"> Category Wise Total Expense </h3>
+<div class="container">
+  <div class="row">
+      <div class="card" style="width: 88rem;height:550px;">
+
+       <div class="card-body">
+           <div class="row">
+
+               <div class="col-4">
+                 <table class="table">
+                      <thead class="thead-dark">
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Category</th>
+                          <th scope="col">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr style="background-color:#ffcccc">
+                          <th scope="row">0</th>
+                          <td>Misc</td>
+                          <td id="Misc">0</td>
+                        </tr>
+                        <tr style="background-color:#d7ecfb">
+                          <th scope="row">1</th>
+                          <td>Food</td>
+                          <td id="Food">0</td>
+                        </tr>
+                        <tr style="background-color:#fff5dd">
+                          <th scope="row">2</th>
+                          <td>Shopping</td>
+                          <td id="Shopping">0</td>
+                        </tr>
+                        <tr style="background-color:#dbf2f2">
+                          <th scope="row">3</th>
+                          <td>Medicals</td>
+                          <td id="Medicals">0</td>
+                        </tr>
+                        <tr style="background-color:#ebe0ff">
+                          <th scope="row">4</th>
+                          <td>Travel</td>
+                          <td id="Travel">0</td>
+                        </tr>
+                        <tr style="background-color:#ffecd9">
+                          <th scope="row">5</th>
+                          <td>Banking Insurance</td>
+                          <td id="Banking-Insurance">0</td>
+                        </tr>
+                        <tr style="background-color:#ccffcc">
+                          <th scope="row">6</th>
+                          <td>Govt. Bills</td>
+                          <td id="Govt Public Bills">0</td>
+                        </tr>
+                        <tr style="background-color:#ffe6ff">
+                          <th scope="row">7</th>
+                          <td>Ration</td>
+                          <td id="Ration">0</td>
+                        </tr>
+                        <tr style="background-color:#ffffe6">
+                          <th scope="row">8</th>
+                          <td>Recharge</td>
+                          <td id="Recharge Payment">0</td>
+                        </tr>
+                      </tbody>
+                  </table>
+               </div>
+
+               <div class="col-8" style="align:center;">
+                   <div id="Loader">
+                     <p style="text-align:center;">Loading data ...</p>
+                   </div>
+                   <canvas id="myChart" style="display:none; margin-top: 90px;"></canvas>
+               </div>
+
+           </div>
+       </div>
+     </div>
+  </div>
+</div>
+
+
+<br><br><br><br><br>
+
+
+<div class="row">
+  <div class="col-md-8">
+    <h3 style="margin-left:50%;"> Expense Comparing Timeline<h3>
+  </div>
+  <div class="col">
+    <div class="dropdown show"  style="margin-left:10px;">
+      <a id="toggler" class="btn btn-warning dropdown-toggle" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Selected Timeline: Last Week
+      </a>
+
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <a class="dropdown-item" onclick="enable('Week')">Past Week</a>
+        <a class="dropdown-item" onclick="enable('Month')">Past Month</a>
+        <a class="dropdown-item" onclick="enable('Year')">Past Year</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="chart-container" style="margin: auto;width:90vw">
+  <canvas id="myChart_Week" style="display:block"></canvas>
+  <canvas id="myChart_Month" style="display:none"></canvas>
+  <canvas id="myChart_Year"  style="display:none"></canvas>
+  <br>
+</div>
+</body>
+</html>
+
+<script>
+function enable(name){
+  document.getElementById("myChart_Week").style.display = "none";
+  document.getElementById("myChart_Month").style.display = "none";
+  document.getElementById("myChart_Year").style.display = "none";
+
+  document.getElementById("myChart_"+name).style.display = "block";
+  document.getElementById("toggler").innerHTML = "Selected Timeline: Last"+ name
+}
+</script>
+
+<script src="./static/scripts/chart_week.js"></script>
+<script src="./static/scripts/chart_month.js"></script>
+<script src="./static/scripts/chart_year.js"></script>
